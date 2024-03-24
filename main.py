@@ -1,4 +1,5 @@
 import sys
+import time
 from colorama import init, Fore, Style
 init()
 from boards import board_player1, board_player11, board_player2, board_player22
@@ -14,6 +15,7 @@ def start():
         sys.exit()
 
 def board_print(board, pl):
+    time.sleep(0.7)
     if pl == 1:
         i = 1
         print("    " + Fore.RED + "yours board" + "         " + "opponent's board" + Style.RESET_ALL)
@@ -35,13 +37,24 @@ def board_print(board, pl):
 def is_square_empty(board, row, column):
     return board[row][column] == "-"
 
+def is_square_empty2(board, row, column):
+    if board[row][column] == "-":
+        return 1
+    elif board[row][column] == "■":
+        return 2
+    else:
+        return 3
+
 
 def put_ship_4(board, player):
     if player == 1:
-        print("First player's turn".upper())
+        print("<<<<<<<<<<First player's turn>>>>>>>>>".upper())
+        board_print(board_player1, 1)
     else:
-        print("Second player's move".upper())
+        print("<<<<<<<<<<Second player's move>>>>>>>>".upper())
+        board_print(board_player2, 2)
     print("Put ■■■■ ship")
+    time.sleep(0.7)
     var_aj = input("Horizontal or Vertical? (1/2)")
     row = int(input("Row (1, 2, 3, 4, 5, 6, 7, 8): "))
     column = input("Column (A, B, C, D, E, F, G, H): ").lower()
@@ -64,6 +77,7 @@ def put_ship_3(board, player):
 
     for j in range(2):
         print("Put ■■■ ship")
+        time.sleep(0.7)
         var_aj = input("Horizontal or Vertical? (1/2)")
         row = int(input("Row (1, 2, 3, 4, 5, 6, 7, 8): ")) - 1
         column = a1[input("Column (A, B, C, D, E, F, G, H): ").lower()]
@@ -98,6 +112,7 @@ def put_ship_2(board, player):
 
     for j in range(3):
         print("Put ■■ ship")
+        time.sleep(0.7)
         var_aj = input("Horizontal or Vertical? (1/2)")
         row = int(input("Row (1, 2, 3, 4, 5, 6, 7, 8): ")) - 1
         column = a1[input("Column (A, B, C, D, E, F, G, H): ").lower()]
@@ -124,6 +139,7 @@ def put_ship_1(board, player):
 
     for j in range(4):
         print("Put ■ ship")
+        time.sleep(0.7)
         row = int(input("Row (1, 2, 3, 4, 5, 6, 7, 8): ")) - 1
         column = a1[input("Column (A, B, C, D, E, F, G, H): ").lower()]
 
@@ -136,16 +152,127 @@ def put_ship_1(board, player):
         board_print(board, player)
     return board
 
+def is_end(board):
+    for i in range(8):
+        for j in range(8):
+            if board[i][j] == "⏺" or board[i][j] == "-":
+                continue
+            elif board[i][j] == "■":
+                return False
+    return True
+
+
+
+def finish(player):
+    if player == 1:
+        print("Win 1")
+        sys.exit()
+    elif player == 2:
+        print("Win 2")
+        sys.exit()
+
+
+def sharun():
+    print("Both players have already placed all the ships \nit’s time for the battle")
+    while True:
+        print("<<<<<<<<<<First player's turn>>>>>>>>>".upper())
+        board_print(board_player1, 1)
+        print("Where to shoot captain?")
+        row = int(input("Row (1, 2, 3, 4, 5, 6, 7, 8): ")) - 1
+        column = a1[input("Column (A, B, C, D, E, F, G, H): ").lower()]
+        if is_square_empty2(board_player2, row, column) == 1:
+            print("<<<<<<Missed>>>>>>")
+            board_player11[row][column] = Fore.BLUE + "⏺" + Fore.YELLOW
+            board_player2[row][column] = Fore.BLUE + "⏺" + Fore.CYAN
+            board_print(board_player1, 1)
+        elif is_square_empty2(board_player2, row, column) == 2:
+            print("<<<<<<EXACTLY>>>>>>")
+            board_player11[row][column] = Fore.RED + "✖" + Fore.YELLOW
+            board_player2[row][column] = Fore.RED + "✖" + Fore.CYAN
+            board_print(board_player1, 1)
+            while True:
+                print("<<<<<<<<<<First player's turn>>>>>>>>>".upper())
+                board_print(board_player1, 1)
+                print("Where to shoot captain?")
+                row = int(input("Row (1, 2, 3, 4, 5, 6, 7, 8): ")) - 1
+                column = a1[input("Column (A, B, C, D, E, F, G, H): ").lower()]
+                if is_square_empty2(board_player2, row, column) == 1:
+                    print("<<<<<<Missed>>>>>>")
+                    board_player11[row][column] = Fore.BLUE + "⏺" + Fore.YELLOW
+                    board_player2[row][column] = Fore.BLUE + "⏺" + Fore.CYAN
+                    board_print(board_player1, 1)
+                    break
+                elif is_square_empty2(board_player2, row, column) == 2:
+                    print("<<<<<<EXACTLY>>>>>>")
+                    board_player11[row][column] = Fore.RED + "✖" + Fore.YELLOW
+                    board_player2[row][column] = Fore.RED + "✖" + Fore.CYAN
+                    board_print(board_player1, 1)
+                else:
+                    print("Oops, you've already shot there")
+                    break
+                if is_end(board_player2):
+                    finish(1)
+        else:
+            print("Oops, you've already shot there")
+        if is_end(board_player2):
+            finish(1)
+
+
+        print("<<<<<<<<<<Second player's move>>>>>>>>".upper())
+        board_print(board_player2, 2)
+        print("Where to shoot captain?")
+        row = int(input("Row (1, 2, 3, 4, 5, 6, 7, 8): ")) - 1
+        column = a1[input("Column (A, B, C, D, E, F, G, H): ").lower()]
+        if is_square_empty2(board_player1, row, column) == 1:
+            print("<<<<<<Missed>>>>>>")
+            board_player22[row][column] = Fore.BLUE + "⏺" + Fore.CYAN
+            board_player1[row][column] = Fore.BLUE + "⏺" + Fore.YELLOW
+            board_print(board_player2, 2)
+        elif is_square_empty2(board_player2, row, column) == 2:
+            print("<<<<<<EXACTLY>>>>>>")
+            board_player22[row][column] = Fore.RED + "✖" + Fore.CYAN
+            board_player1[row][column] = Fore.RED + "✖" + Fore.YELLOW
+            board_print(board_player2, 2)
+            while True:
+                print("<<<<<<<<<<Second player's move>>>>>>>>".upper())
+                board_print(board_player2, 2)
+                print("Where to shoot captain?")
+                row = int(input("Row (1, 2, 3, 4, 5, 6, 7, 8): ")) - 1
+                column = a1[input("Column (A, B, C, D, E, F, G, H): ").lower()]
+                if is_square_empty2(board_player1, row, column) == 1:
+                    print("<<<<<<Missed>>>>>>")
+                    board_player22[row][column] = Fore.BLUE + "⏺" + Fore.CYAN
+                    board_player1[row][column] = Fore.BLUE + "⏺" + Fore.YELLOW
+                    board_print(board_player2, 2)
+                    break
+                elif is_square_empty2(board_player2, row, column) == 2:
+                    print("<<<<<<EXACTLY>>>>>>")
+                    board_player22[row][column] = Fore.RED + "✖" + Fore.CYAN
+                    board_player1[row][column] = Fore.RED + "✖" + Fore.YELLOW
+                    board_print(board_player2, 2)
+                else:
+                    print("Oops, you've already shot there")
+                    break
+                if is_end(board_player1):
+                    finish(2)
+        else:
+            print("Oops, you've already shot there")
+        if is_end(board_player1):
+            finish(2)
+
+
+
 
 def main():
+    print(Fore.RED + " " * 15,"WARNING", "\nIn the game, ships can be placed next to each other" + Style.RESET_ALL)
+    time.sleep(2)
     if start():
-        board_print(board_player1, 1)
         put_ship_4(board_player1, 1)
         board_print(board_player1, 1)
 
-        board_print(board_player2, 2)
         put_ship_4(board_player2, 2)
         board_print(board_player2, 2)
+    sharun()
 
 
 
